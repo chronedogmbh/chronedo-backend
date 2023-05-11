@@ -31,10 +31,12 @@ outcome==1.2.0
 packaging==23.1
 pathspec==0.11.1
 platformdirs==3.5.0
+psycopg2==2.9.6
 pycodestyle==2.10.0
 pycparser==2.21
 pyflakes==3.0.1
 PyJWT==2.7.0
+pyotp==2.8.0
 PySocks==1.7.1
 python-decouple==3.8
 pytz==2023.3
