@@ -105,7 +105,9 @@ class Command(BaseCommand):
             return watch_data
 
         watch_items = soup.select(".article-item-container")
+        print(watch_items)
         watches = []
+
         print(f"Found {len(watch_items)} watches")
 
         for item in watch_items:
