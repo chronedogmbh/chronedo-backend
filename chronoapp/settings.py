@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "drf_yasg",
+    "django_celery_beat",
+    "django_celery_results",
     # Local
     "authentication",
     "watches",
@@ -126,6 +128,9 @@ DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 
 PYOTP_SECRET_KEY = config("PYOTP_SECRET_KEY")
 PYOTP_HOTP = pyotp.HOTP(PYOTP_SECRET_KEY)
+
+CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = "django-db"
 
 if ENVIRONMENT == "production":
     SESSION_COOKIE_HTTPONLY = True
