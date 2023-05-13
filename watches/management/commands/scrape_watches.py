@@ -29,9 +29,10 @@ class Command(BaseCommand):
         else:
             total_pages = pagination_nav[-1].text.strip()
             for i in range(1, int(total_pages) + 1):
-                link = url.replace("index.htm", f"index-{i}.htm")
-                label = i
-                pages_links.append((label, link))
+                if i <= 7:
+                    link = url.replace("index.htm", f"index-{i}.htm")
+                    label = i
+                    pages_links.append((label, link))
 
         driver.quit()
 
