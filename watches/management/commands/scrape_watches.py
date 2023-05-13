@@ -120,9 +120,6 @@ class Command(BaseCommand):
                 continue
             else:
                 watches.append(extracted_data)
-                self.stdout.write(
-                    self.style.SUCCESS(f"Scraped {extracted_data['title']}")
-                )
 
         driver.quit()
 
@@ -133,9 +130,6 @@ class Command(BaseCommand):
         watches = []
         for page in pages:
             label, url = page
-            self.stdout.write(
-                self.style.NOTICE(f"Scraping page {label} of {len(pages)}...")
-            )
             scraped_watches = self.scrape_watches(url)
             watches.extend(scraped_watches)
 
@@ -144,12 +138,9 @@ class Command(BaseCommand):
                 f"Scraped {len(watches)} watches from {len(pages)} pages"
             )
         )
-        self.stdout.write(self.style.NOTICE("Inserting Watches into Database..."))
-
         return watches
 
     def add_arguments(self, parser):
-        parser.add_argument("brand", type=str, help="Brand Name")
         parser.add_argument("max_pages", type=int, help="Max Pages to Scrape")
         parser.add_argument("per_page", type=int, help="Watches per Page")
 
@@ -167,13 +158,9 @@ class Command(BaseCommand):
             "gallet",
         ]
         VALID_PER_PAGE = [30, 60, 120]
-        brand = kwargs["brand"]
         max_pages = kwargs["max_pages"]
         per_page = kwargs["per_page"]
 
-        if brand not in BRANDS:
-            self.stdout.write(self.style.ERROR("Invalid Brand Name!"))
-            return
         if max_pages < 1:
             self.stdout.write(self.style.ERROR("Invalid Max Pages!"))
             return
@@ -186,27 +173,33 @@ class Command(BaseCommand):
 
         self.max_pages = max_pages
 
-        brand_obj, _ = Brand.objects.get_or_create(name=brand)
-        url = f"https://www.chrono24.com/{brand}/index.htm?pageSize={per_page}"
-
-        data = self.fetch_watches_by_brand(url)
-
-        for item in data:
-            normalized_price = item["price"].replace("$", "").replace(",", "")
-            try:
-                watch, _ = Watch.objects.get_or_create(
-                    title=item["title"],
-                    subtitle=item["subtitle"],
-                    price=normalized_price,
-                    link=item["link"],
-                    image=item["image"],
-                    location=item.get("location"),
-                    brand=brand_obj,
+        for brand in BRANDS:
+            self.stdout.write(
+                self.style.NOTICE(
+                    f"Scraping {brand} - Per Page{per_page} - Total Pages {max_pages}..."
                 )
-                self.stdout.write(self.style.SUCCESS(f"Added {watch}"))
-            except Exception as E:
-                self.stdout.write(self.style.ERROR(f"Failed to add {item['title']}"))
-                self.stdout.write(self.style.ERROR(str(E)))
+            )
+            brand_obj, _ = Brand.objects.get_or_create(name=brand)
+            url = f"https://www.chrono24.com/{brand}/index.htm?pageSize={per_page}"
+            data = self.fetch_watches_by_brand(url)
+
+            for item in data:
+                normalized_price = item["price"].replace("$", "").replace(",", "")
+                try:
+                    watch, _ = Watch.objects.get_or_create(
+                        title=item["title"],
+                        subtitle=item["subtitle"],
+                        price=normalized_price,
+                        link=item["link"],
+                        image=item["image"],
+                        location=item.get("location"),
+                        brand=brand_obj,
+                    )
+                except Exception as E:
+                    self.stdout.write(
+                        self.style.ERROR(f"Failed to add {item['title']}")
+                    )
+                    self.stdout.write(self.style.ERROR(str(E)))
 
         self.stdout.write(
             self.style.SUCCESS(f"Watches of {brand} scrapped successfully!")
