@@ -57,6 +57,7 @@ class Command(BaseCommand):
                 break
 
         soup = BeautifulSoup(driver.page_source, "html.parser")
+        print(soup)
 
         def extract_data(item: Tag) -> Dict[str, Any]:
             link_element = item.select_one("a")
