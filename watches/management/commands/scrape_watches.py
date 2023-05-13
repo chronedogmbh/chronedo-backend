@@ -29,7 +29,7 @@ class Command(BaseCommand):
         else:
             total_pages = pagination_nav[-1].text.strip()
             for i in range(1, int(total_pages) + 1):
-                if i <= 7:
+                if i <= self.max_pages:
                     link = url.replace("index.htm", f"index-{i}.htm")
                     label = i
                     pages_links.append((label, link))
@@ -115,6 +115,7 @@ class Command(BaseCommand):
                 or extracted_data["link"] is None
                 or extracted_data["image"] is None
                 or extracted_data["subtitle"] is None
+                or extracted_data["location"] is None
             ):
                 continue
             else:
@@ -149,6 +150,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("brand", type=str, help="Brand Name")
+        parser.add_argument("max_pages", type=int, help="Max Pages to Scrape")
+        parser.add_argument("per_page", type=int, help="Watches per Page")
 
     def handle(self, *args, **kwargs):
         BRANDS = [
@@ -163,13 +166,28 @@ class Command(BaseCommand):
             "tudor",
             "gallet",
         ]
+        VALID_PER_PAGE = [30, 60, 120]
         brand = kwargs["brand"]
+        max_pages = kwargs["max_pages"]
+        per_page = kwargs["per_page"]
+
         if brand not in BRANDS:
             self.stdout.write(self.style.ERROR("Invalid Brand Name!"))
             return
+        if max_pages < 1:
+            self.stdout.write(self.style.ERROR("Invalid Max Pages!"))
+            return
+        if per_page not in VALID_PER_PAGE:
+            self.stdout.write(self.style.ERROR("Invalid Per Page!"))
+            self.stdout.write(
+                self.style.NOTICE(f"Valid Per Page Values: {VALID_PER_PAGE}")
+            )
+            return
+
+        self.max_pages = max_pages
 
         brand_obj, _ = Brand.objects.get_or_create(name=brand)
-        url = f"https://www.chrono24.com/{brand}/index.htm?pageSize=120"
+        url = f"https://www.chrono24.com/{brand}/index.htm?pageSize={per_page}"
 
         data = self.fetch_watches_by_brand(url)
 
