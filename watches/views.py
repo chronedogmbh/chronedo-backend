@@ -13,7 +13,7 @@ class BrandViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class WatchViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Watch.objects.all()
+    queryset = Watch.objects.all().order_by("title")
     serializer_class = WatchSerializer
     permission_classes = [permissions.IsAuthenticated]
 
