@@ -11,6 +11,7 @@ class BrandSerializer(serializers.ModelSerializer):
 
 class WatchSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(read_only=True)
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Watch
@@ -23,10 +24,11 @@ class WatchSerializer(serializers.ModelSerializer):
             "image",
             "location",
             "brand",
+            "is_liked",
         ]
 
-
-class BrandIdsSerializer(serializers.Serializer):
-    ids = serializers.ListField(
-        child=serializers.PrimaryKeyRelatedField(queryset=Brand.objects.all())
-    )
+    def get_is_liked(self, obj):
+        request = self.context.get("request")
+        if request:
+            return request.user in obj.likes.all()
+        return False
