@@ -15,7 +15,7 @@ class BrandViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class WatchViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Watch.objects.all().order_by("title")
+    queryset = Watch.objects.all().order_by("?").distinct()
     serializer_class = WatchSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
