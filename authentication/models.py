@@ -17,3 +17,10 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class Email(models.Model):
+    email = models.EmailField(unique=True)
+
+    def __str__(self) -> str:
+        return self.email

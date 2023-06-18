@@ -5,8 +5,16 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 
 from rest_framework import serializers
+from .models import Email
+
 
 User = get_user_model()
+
+
+class EmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Email
+        fields = ["id", "email"]
 
 
 class GenerateOTPSerializer(serializers.Serializer):

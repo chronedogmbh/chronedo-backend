@@ -5,9 +5,15 @@ from rest_framework import generics, serializers, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import GenerateOTPSerializer, OTPLoginSerializer
+from .serializers import GenerateOTPSerializer, OTPLoginSerializer, EmailSerializer
+from .models import Email
 
 User = get_user_model()
+
+
+class EmailCreateAPIView(generics.CreateAPIView):
+    serializer_class = EmailSerializer
+    queryset = Email.objects.all()
 
 
 class GenerateOTPView(generics.CreateAPIView):

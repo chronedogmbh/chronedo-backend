@@ -11,13 +11,13 @@ from .serializers import BrandSerializer, WatchSerializer
 class BrandViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
 
 class WatchViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Watch.objects.all().order_by("?").distinct()
     serializer_class = WatchSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_class = WatchFilter
 
