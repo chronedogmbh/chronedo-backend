@@ -1,7 +1,11 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from core.abstract import TimestampedAbstractModel
+
+from .tasks import scrape_watches
 
 
 class Brand(TimestampedAbstractModel):
@@ -26,3 +30,68 @@ class Watch(TimestampedAbstractModel):
 
     def __str__(self):
         return self.title
+
+
+class Task(TimestampedAbstractModel):
+    class CountryChoices(models.TextChoices):
+        AT = "AT", "Austria"
+        BR = "BR", "Brazil"
+        BG = "BG", "Bulgaria"
+        CA = "CA", "Canada"
+        CZ = "CZ", "Czech Republic"
+        FR = "FR", "France"
+        DE = "DE", "Germany"
+        GR = "GR", "Greece"
+        IT = "IT", "Italy"
+        JP = "JP", "Japan"
+        NO = "NO", "Norway"
+        PL = "PL", "Poland"
+        SG = "SG", "Singapore"
+        ES = "ES", "Spain"
+        SE = "SE", "Sweden"
+        CH = "CH", "Switzerland"
+        NL = "NL", "Netherlands"
+        AE = "AE", "United Arab Emirates"
+        UK = "UK", "United Kingdom"
+        US = "US", "United States"
+
+    class StatusChoices(models.TextChoices):
+        PENDING = "PENDING", "Pending"
+        IN_PROGRESS = "IN_PROGRESS", "In Progress"
+        COMPLETED = "COMPLETED", "Completed"
+
+    class BrandChoices(models.TextChoices):
+        ROLEX = "rolex", "Rolex"
+        IWC = "iwc", "IWC"
+        OMEGA = "omega", "Omega"
+        BREITLING = "breitling", "Breitling"
+        AUDEMARSPIGUET = "audemarspiguet", "Audemars Piguet"
+        HUBLOT = "hublot", "Hublot"
+        PANERAI = "panerai", "Panerai"
+        PATEKPHILIPPE = "patekphilippe", "Patek Philippe"
+        TUDOR = "tudor", "Tudor"
+
+    class PerPageChoices(models.IntegerChoices):
+        THIRTY = 30
+        SIXTY = 60
+        ONE_HUNDRED_TWENTY = 120
+
+    title = models.CharField(max_length=255)
+    country = models.CharField(max_length=2, choices=CountryChoices.choices)
+    status = models.CharField(
+        max_length=12, choices=StatusChoices.choices, default=StatusChoices.PENDING
+    )
+    brand = models.CharField(max_length=20, choices=BrandChoices.choices)
+    per_page = models.IntegerField(
+        choices=PerPageChoices.choices, default=PerPageChoices.THIRTY
+    )
+    max_pages = models.IntegerField(default=1)
+
+    def __str__(self):
+        return self.title
+
+
+@receiver(post_save, sender=Task)
+def run_task(sender, instance, created, **kwargs):
+    if created:
+        scrape_watches.delay(instance.id)

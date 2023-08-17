@@ -1,0 +1,7 @@
+{% extends 'admin/index.html' %}
+
+{% block content %}
+<button class="button" style="margin-bottom: 1rem;"><a style="color:white;text-decoration:none;"
+        href="{% url 'delete-sold-watches' %}">Delete Sold Watches</a></button>
+{{ block.super }}
+{% endblock content %}

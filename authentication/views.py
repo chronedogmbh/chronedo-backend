@@ -5,8 +5,8 @@ from rest_framework import generics, serializers, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import GenerateOTPSerializer, OTPLoginSerializer, EmailSerializer
 from .models import Email
+from .serializers import EmailSerializer, GenerateOTPSerializer, OTPLoginSerializer
 
 User = get_user_model()
 
