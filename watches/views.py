@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core import management
 from django.shortcuts import redirect
 
 import requests
@@ -15,11 +16,7 @@ from .serializers import BrandSerializer, WatchSerializer
 
 @shared_task
 def delete_sold_watches_task():
-    watches = Watch.objects.all()
-    for watch in watches:
-        response = requests.get(watch.link)
-        if response.status_code == 404 or response.status_code == 403:
-            watch.delete()
+    management.call_command("delete_watches")
 
 
 def delete_sold_watches(request):
