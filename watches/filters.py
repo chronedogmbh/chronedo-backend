@@ -10,10 +10,11 @@ class WatchFilter(filters.FilterSet):
     price__gte = filters.NumberFilter(field_name="price", lookup_expr="gte")
     price__lte = filters.NumberFilter(field_name="price", lookup_expr="lte")
     location = filters.CharFilter(field_name="location", lookup_expr="icontains")
+    gender = filters.CharFilter(field_name="gender", lookup_expr="icontains")
 
     class Meta:
         model = Watch
-        fields = ["brands", "price__gte", "price__lte", "location"]
+        fields = ["brands", "price__gte", "price__lte", "location", "gender"]
 
     def filter_by_brands(self, queryset, name, value):
         values = value.split(",")

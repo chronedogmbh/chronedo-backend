@@ -23,7 +23,7 @@ class Watch(TimestampedAbstractModel):
     location = models.CharField(max_length=255)
     link = models.URLField(max_length=2000)
     image = models.URLField(max_length=2000)
-
+    gender = models.CharField(max_length=255, blank=True, null=True)
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, related_name="likes"
     )
