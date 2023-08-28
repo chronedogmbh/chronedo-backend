@@ -25,6 +25,7 @@ class WatchSerializer(serializers.ModelSerializer):
             "location",
             "brand",
             "is_liked",
+            "gender",
         ]
 
     def get_is_liked(self, obj):
